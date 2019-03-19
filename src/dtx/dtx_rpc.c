@@ -559,7 +559,7 @@ int
 dtx_commit(uuid_t po_uuid, uuid_t co_uuid, struct daos_tx_entry *dtes,
 	   int count, uint32_t version)
 {
-	struct ds_cont		*cont = NULL;
+	struct ds_cont_child	*cont = NULL;
 	struct daos_tx_id	*dti = NULL;
 	struct umem_attr	 uma;
 	struct btr_root		 tree_root = { 0 };
@@ -569,7 +569,7 @@ dtx_commit(uuid_t po_uuid, uuid_t co_uuid, struct daos_tx_entry *dtes,
 	int			 rc;
 	int			 rc1 = 0;
 
-	rc = ds_cont_lookup(po_uuid, co_uuid, &cont);
+	rc = ds_cont_child_lookup(po_uuid, co_uuid, &cont);
 	if (rc != 0)
 		return rc;
 
@@ -592,7 +592,7 @@ dtx_commit(uuid_t po_uuid, uuid_t co_uuid, struct daos_tx_entry *dtes,
 
 	if (dti != NULL)
 		/* We cannot rollback the commit, so commit locally anyway. */
-		rc1 = vos_dtx_commit(cont->sc_hdl, dti, count);
+		rc1 = vos_dtx_commit(cont->scc_hdl, dti, count);
 
 out:
 	if (dti != NULL)
@@ -604,7 +604,7 @@ out:
 	D_ASSERT(d_list_empty(&head));
 
 	if (cont != NULL)
-		ds_cont_put(cont);
+		ds_cont_child_put(cont);
 
 	return rc >= 0 ? rc1 : rc;
 }
@@ -613,7 +613,7 @@ int
 dtx_abort(uuid_t po_uuid, uuid_t co_uuid, struct daos_tx_entry *dtes,
 	  int count, uint32_t version)
 {
-	struct ds_cont		*cont = NULL;
+	struct ds_cont_child	*cont = NULL;
 	struct daos_tx_id	*dti = NULL;
 	struct umem_attr	 uma;
 	struct btr_root		 tree_root = { 0 };
@@ -627,7 +627,7 @@ dtx_abort(uuid_t po_uuid, uuid_t co_uuid, struct daos_tx_entry *dtes,
 	 */
 	D_ASSERT(count == 1);
 
-	rc = ds_cont_lookup(po_uuid, co_uuid, &cont);
+	rc = ds_cont_child_lookup(po_uuid, co_uuid, &cont);
 	if (rc != 0)
 		return rc;
 
@@ -647,7 +647,7 @@ dtx_abort(uuid_t po_uuid, uuid_t co_uuid, struct daos_tx_entry *dtes,
 	D_ASSERT(dti != NULL);
 
 	/* Local abort firstly. */
-	rc = vos_dtx_abort(cont->sc_hdl, dti, count, false);
+	rc = vos_dtx_abort(cont->scc_hdl, dti, count, false);
 	if (rc != 0)
 		D_GOTO(out, rc);
 
@@ -665,7 +665,7 @@ out:
 	D_ASSERT(d_list_empty(&head));
 
 	if (cont != NULL)
-		ds_cont_put(cont);
+		ds_cont_child_put(cont);
 
 	return rc == -DER_NONEXIST ? 0 : rc;
 }

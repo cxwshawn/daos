@@ -52,13 +52,13 @@ void ds_cont_svc_step_down(struct cont_svc *svc);
  * Stores per-thread, per-container information, such as the vos container
  * handle.
  */
-struct ds_cont {
-	struct daos_llink	sc_list;
-	daos_handle_t		sc_hdl;
-	uuid_t			sc_uuid;
+struct ds_cont_child {
+	struct daos_llink	scc_list;
+	daos_handle_t		scc_hdl;
+	uuid_t			scc_uuid;
 	/* The time for the latest DTX resync operation. */
-	uint64_t		sc_dtx_resync_time;
-	uint32_t		sc_dtx_resyncing:1;
+	uint64_t		scc_dtx_resync_time;
+	uint32_t		scc_dtx_resyncing:1;
 };
 
 /*
@@ -71,8 +71,8 @@ struct ds_cont_hdl {
 	d_list_t		sch_entry;
 	uuid_t			sch_uuid;	/* of the container handle */
 	uint64_t		sch_capas;
-	struct ds_pool_child   *sch_pool;
-	struct ds_cont	       *sch_cont;
+	struct ds_pool_child	*sch_pool;
+	struct ds_cont_child	*sch_cont;
 	int			sch_ref;
 };
 
@@ -88,13 +88,18 @@ int
 ds_cont_local_close(uuid_t cont_hdl_uuid);
 
 int
-ds_cont_lookup_or_create(struct ds_cont_hdl *hdl, uuid_t cont_uuid);
+ds_cont_child_lookup_or_create(struct ds_cont_hdl *hdl, uuid_t cont_uuid);
 int
-ds_cont_lookup(uuid_t pool_uuid, uuid_t cont_uuid, struct ds_cont **ds_cont);
+ds_cont_child_lookup(uuid_t pool_uuid, uuid_t cont_uuid,
+		     struct ds_cont_child **ds_cont);
 
-void ds_cont_put(struct ds_cont *cont);
+void ds_cont_child_put(struct ds_cont_child *cont);
 
 int
 ds_cont_iter(daos_handle_t ph, uuid_t co_uuid, ds_iter_cb_t callback,
 	     void *arg, uint32_t type);
+
+int
+cont_iv_snapshots_fetch(void *ns, uuid_t cont_uuid, uint64_t **snapshots,
+			int *snap_count);
 #endif /* ___DAOS_SRV_CONTAINER_H_ */
