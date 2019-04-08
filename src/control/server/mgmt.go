@@ -37,7 +37,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-var jsonDBRelPath = "share/control/mgmtinit_db.json"
+var jsonDBRelPath = "share/daos/control/mgmtinit_db.json"
 
 // controlService type is the data container for the service.
 type controlService struct {
