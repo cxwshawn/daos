@@ -61,6 +61,8 @@ to optimize performance and cost.
 %package server
 Summary: The DAOS server
 Requires: %{name} = %{version}-%{release}
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 
 %description server
 This is the package needed to run a DAOS server
@@ -117,6 +119,11 @@ mv %{?buildroot}%{_prefix}/{TESTING,lib/%{name}/}
 cp -al ftest.sh src/tests/ftest %{?buildroot}%{daoshome}/TESTING
 find %{?buildroot}%{daoshome}/TESTING/ftest -name \*.py[co] -print0 | xargs -r0 rm -f
 #ln %{?buildroot}%{daoshome}/{TESTING/.build_vars,.build_vars-Linux}.sh
+mkdir -p %{?buildroot}/%{_sysconfdir}/ld.so.conf.d/
+echo "%{_libdir}/daos_srv" > %{?buildroot}/%{_sysconfdir}/ld.so.conf.d/daos.conf
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-, root, root, -)
@@ -143,6 +150,7 @@ find %{?buildroot}%{daoshome}/TESTING/ftest -name \*.py[co] -print0 | xargs -r0 
 
 %files server
 %{_prefix}%{_sysconfdir}/daos_server.yml
+%{_sysconfdir}/ld.so.conf.d/daos.conf
 %{_bindir}/daos_server
 %{_bindir}/daos_io_server
 %{_libdir}/daos_srv/libbio.so
