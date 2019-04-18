@@ -64,12 +64,14 @@ pipeline {
     }
 
     stages {
+        /*
         stage('Cancel Previous Builds') {
             when { changeRequest() }
             steps {
                 cancelPreviousBuilds()
             }
         }
+        */
         stage('Build') {
             // abort other builds if/when one fails to avoid wasting time
             // and resources
