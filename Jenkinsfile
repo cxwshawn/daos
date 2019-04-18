@@ -94,6 +94,7 @@ pipeline {
                               git submodule init
                               git submodule update -f'''
                         sconsBuild clean: "_build.external${arch}",
+                                   scm: [branch: "master"],
                                    failure_artifacts: 'config.log-centos7-gcc'
                         stash name: 'CentOS-install', includes: 'install/**'
                         stash name: 'CentOS-build-vars', includes: ".build_vars${arch}.*"
