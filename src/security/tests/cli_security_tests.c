@@ -129,9 +129,9 @@ test_request_credentials_fails_with_null_creds(void **state)
 static void
 test_request_credentials_succeeds_with_good_values(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 
 	assert_int_equal(dc_sec_request_creds(&creds), DER_SUCCESS);
 
@@ -141,9 +141,9 @@ test_request_credentials_succeeds_with_good_values(void **state)
 static void
 test_request_credentials_fails_if_drpc_connect_fails(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 	free_drpc_connect_return(); /* drpc_connect returns NULL on failure */
 
 	assert_int_equal(dc_sec_request_creds(&creds), -DER_BADPATH);
@@ -154,9 +154,9 @@ test_request_credentials_fails_if_drpc_connect_fails(void **state)
 static void
 test_request_credentials_connects_to_default_socket(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 
 	dc_sec_request_creds(&creds);
 
@@ -169,9 +169,9 @@ test_request_credentials_connects_to_default_socket(void **state)
 static void
 test_request_credentials_fails_if_drpc_call_fails(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 	drpc_call_return = -DER_BUSY;
 
 	assert_int_equal(dc_sec_request_creds(&creds),
@@ -183,9 +183,9 @@ test_request_credentials_fails_if_drpc_call_fails(void **state)
 static void
 test_request_credentials_calls_drpc_call(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 
 	dc_sec_request_creds(&creds);
 
@@ -214,9 +214,9 @@ test_request_credentials_calls_drpc_call(void **state)
 static void
 test_request_credentials_closes_socket_when_call_ok(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 
 	dc_sec_request_creds(&creds);
 
@@ -228,9 +228,9 @@ test_request_credentials_closes_socket_when_call_ok(void **state)
 static void
 test_request_credentials_closes_socket_when_call_fails(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 	drpc_call_return = -DER_NOMEM;
 
 	dc_sec_request_creds(&creds);
@@ -243,9 +243,9 @@ test_request_credentials_closes_socket_when_call_fails(void **state)
 static void
 test_request_credentials_fails_if_reply_null(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 	drpc_call_resp_return_ptr = NULL;
 
 	assert_int_equal(dc_sec_request_creds(&creds), -DER_NOREPLY);
@@ -256,9 +256,9 @@ test_request_credentials_fails_if_reply_null(void **state)
 static void
 test_request_credentials_fails_if_reply_status_failure(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 	drpc_call_resp_return_content.status = DRPC__STATUS__FAILURE;
 
 	assert_int_equal(dc_sec_request_creds(&creds), -DER_MISC);
@@ -269,9 +269,9 @@ test_request_credentials_fails_if_reply_status_failure(void **state)
 static void
 test_request_credentials_fails_if_reply_body_malformed(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 	free_drpc_call_resp_body();
 	D_ALLOC(drpc_call_resp_return_content.body.data, 1);
 	drpc_call_resp_return_content.body.len = 1;
@@ -284,9 +284,9 @@ test_request_credentials_fails_if_reply_body_malformed(void **state)
 static void
 test_request_credentials_fails_if_reply_token_missing(void **state)
 {
-	daos_iov_t creds;
+	d_iov_t creds;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 	auth_token__free_unpacked(
 			drpc_call_resp_return_security_credential->token, NULL);
 	drpc_call_resp_return_security_credential->token = NULL;
@@ -301,11 +301,11 @@ test_request_credentials_fails_if_reply_token_missing(void **state)
 static void
 test_request_credentials_returns_raw_bytes(void **state)
 {
-	daos_iov_t	creds;
+	d_iov_t	creds;
 	size_t		expected_len;
 	uint8_t		*expected_data;
 
-	memset(&creds, 0, sizeof(daos_iov_t));
+	memset(&creds, 0, sizeof(d_iov_t));
 
 	/*
 	 * Credential bytes == raw bytes of the packed SecurityCredential

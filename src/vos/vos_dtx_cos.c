@@ -84,7 +84,7 @@ dtx_cos_hkey_size(void)
 }
 
 static void
-dtx_cos_hkey_gen(struct btr_instance *tins, daos_iov_t *key_iov, void *hkey)
+dtx_cos_hkey_gen(struct btr_instance *tins, d_iov_t *key_iov, void *hkey)
 {
 	D_ASSERT(key_iov->iov_len == sizeof(struct dtx_cos_key));
 
@@ -104,8 +104,8 @@ dtx_cos_hkey_cmp(struct btr_instance *tins, struct btr_record *rec, void *hkey)
 }
 
 static int
-dtx_cos_rec_alloc(struct btr_instance *tins, daos_iov_t *key_iov,
-		  daos_iov_t *val_iov, struct btr_record *rec)
+dtx_cos_rec_alloc(struct btr_instance *tins, d_iov_t *key_iov,
+		  d_iov_t *val_iov, struct btr_record *rec)
 {
 	struct dtx_cos_key		*key;
 	struct dtx_cos_rec_bundle	*rbund;
@@ -182,21 +182,21 @@ dtx_cos_rec_free(struct btr_instance *tins, struct btr_record *rec, void *args)
 
 static int
 dtx_cos_rec_fetch(struct btr_instance *tins, struct btr_record *rec,
-		  daos_iov_t *key_iov, daos_iov_t *val_iov)
+		  d_iov_t *key_iov, d_iov_t *val_iov)
 {
 	struct dtx_cos_rec	*dcr;
 
 	D_ASSERT(val_iov != NULL);
 
 	dcr = (struct dtx_cos_rec *)umem_id2ptr(&tins->ti_umm, rec->rec_mmid);
-	daos_iov_set(val_iov, dcr, sizeof(struct dtx_cos_rec));
+	d_iov_set(val_iov, dcr, sizeof(struct dtx_cos_rec));
 
 	return 0;
 }
 
 static int
 dtx_cos_rec_update(struct btr_instance *tins, struct btr_record *rec,
-		   daos_iov_t *key, daos_iov_t *val)
+		   d_iov_t *key, d_iov_t *val)
 {
 	struct dtx_cos_rec_bundle	*rbund;
 	struct dtx_cos_rec		*dcr;
@@ -260,8 +260,8 @@ vos_dtx_list_cos(daos_handle_t coh, daos_unit_oid_t *oid,
 {
 	struct vos_container		*cont;
 	struct dtx_cos_key		 key;
-	daos_iov_t			 kiov;
-	daos_iov_t			 riov;
+	d_iov_t			 kiov;
+	d_iov_t			 riov;
 	struct daos_tx_id		*dti = NULL;
 	struct dtx_cos_rec		*dcr;
 	struct dtx_cos_rec_child	*dcrc;
@@ -281,8 +281,8 @@ vos_dtx_list_cos(daos_handle_t coh, daos_unit_oid_t *oid,
 	key.oid = *oid;
 	key.dkey = d_hash_murmur64(dkey->iov_buf, dkey->iov_len,
 				   VOS_BTR_MUR_SEED);
-	daos_iov_set(&kiov, &key, sizeof(key));
-	daos_iov_set(&riov, NULL, 0);
+	d_iov_set(&kiov, &key, sizeof(key));
+	d_iov_set(&riov, NULL, 0);
 
 	rc = dbtree_lookup(cont->vc_dtx_cos_hdl, &kiov, &riov);
 	if (rc != 0)
@@ -337,8 +337,8 @@ vos_dtx_add_cos(daos_handle_t coh, daos_unit_oid_t *oid,
 	struct vos_container		*cont;
 	struct dtx_cos_key		 key;
 	struct dtx_cos_rec_bundle	 rbund;
-	daos_iov_t			 kiov;
-	daos_iov_t			 riov;
+	d_iov_t			 kiov;
+	d_iov_t			 riov;
 	int				 rc;
 
 	D_ASSERT(dkey != 0);
@@ -348,12 +348,12 @@ vos_dtx_add_cos(daos_handle_t coh, daos_unit_oid_t *oid,
 
 	key.oid = *oid;
 	key.dkey = dkey;
-	daos_iov_set(&kiov, &key, sizeof(key));
+	d_iov_set(&kiov, &key, sizeof(key));
 
 	rbund.cont = cont;
 	rbund.dti = dti;
 	rbund.punch = punch;
-	daos_iov_set(&riov, &rbund, sizeof(rbund));
+	d_iov_set(&riov, &rbund, sizeof(rbund));
 
 	rc = dbtree_upsert(cont->vc_dtx_cos_hdl, BTR_PROBE_EQ,
 			   DAOS_INTENT_UPDATE, &kiov, &riov);
@@ -366,8 +366,8 @@ vos_dtx_del_cos(struct vos_container *cont, daos_unit_oid_t *oid,
 		struct daos_tx_id *xid, uint64_t dkey, bool punch)
 {
 	struct dtx_cos_key		 key;
-	daos_iov_t			 kiov;
-	daos_iov_t			 riov;
+	d_iov_t			 kiov;
+	d_iov_t			 riov;
 	struct dtx_cos_rec		*dcr;
 	struct dtx_cos_rec_child	*dcrc;
 	d_list_t			*head;
@@ -377,8 +377,8 @@ vos_dtx_del_cos(struct vos_container *cont, daos_unit_oid_t *oid,
 
 	key.oid = *oid;
 	key.dkey = dkey;
-	daos_iov_set(&kiov, &key, sizeof(key));
-	daos_iov_set(&riov, NULL, 0);
+	d_iov_set(&kiov, &key, sizeof(key));
+	d_iov_set(&riov, NULL, 0);
 
 	rc = dbtree_lookup(cont->vc_dtx_cos_hdl, &kiov, &riov);
 	if (rc != 0)
@@ -416,8 +416,8 @@ vos_dtx_lookup_cos(daos_handle_t coh, daos_unit_oid_t *oid,
 {
 	struct vos_container		*cont;
 	struct dtx_cos_key		 key;
-	daos_iov_t			 kiov;
-	daos_iov_t			 riov;
+	d_iov_t			 kiov;
+	d_iov_t			 riov;
 	struct dtx_cos_rec		*dcr;
 	struct dtx_cos_rec_child	*dcrc;
 	d_list_t			*head;
@@ -431,8 +431,8 @@ vos_dtx_lookup_cos(daos_handle_t coh, daos_unit_oid_t *oid,
 
 	key.oid = *oid;
 	key.dkey = dkey;
-	daos_iov_set(&kiov, &key, sizeof(key));
-	daos_iov_set(&riov, NULL, 0);
+	d_iov_set(&kiov, &key, sizeof(key));
+	d_iov_set(&riov, NULL, 0);
 
 	rc = dbtree_lookup(cont->vc_dtx_cos_hdl, &kiov, &riov);
 	if (rc != 0)

@@ -142,7 +142,7 @@ dfs_release(dfs_obj_t *obj);
  * \return		0 on Success. Negative on Failure.
  */
 int
-dfs_read(dfs_t *dfs, dfs_obj_t *obj, daos_sg_list_t sgl, daos_off_t off,
+dfs_read(dfs_t *dfs, dfs_obj_t *obj, d_sg_list_t sgl, daos_off_t off,
 	 daos_size_t *read_size);
 
 /**
@@ -156,7 +156,7 @@ dfs_read(dfs_t *dfs, dfs_obj_t *obj, daos_sg_list_t sgl, daos_off_t off,
  * \return		0 on Success. Negative on Failure.
  */
 int
-dfs_write(dfs_t *dfs, dfs_obj_t *obj, daos_sg_list_t sgl, daos_off_t off);
+dfs_write(dfs_t *dfs, dfs_obj_t *obj, d_sg_list_t sgl, daos_off_t off);
 
 /**
  * Query size of file data.

@@ -43,7 +43,7 @@ dtab_df_hkey_size(void)
 }
 
 static void
-dtab_df_hkey_gen(struct btr_instance *tins, daos_iov_t *key_iov, void *hkey)
+dtab_df_hkey_gen(struct btr_instance *tins, d_iov_t *key_iov, void *hkey)
 {
 	D_ASSERT(key_iov->iov_len == sizeof(struct d_uuid));
 	memcpy(hkey, key_iov->iov_buf, key_iov->iov_len);
@@ -64,8 +64,8 @@ dtab_df_rec_free(struct btr_instance *tins, struct btr_record *rec, void *args)
 }
 
 static int
-dtab_df_rec_alloc(struct btr_instance *tins, daos_iov_t *key_iov,
-		  daos_iov_t *val_iov, struct btr_record *rec)
+dtab_df_rec_alloc(struct btr_instance *tins, d_iov_t *key_iov,
+		  d_iov_t *val_iov, struct btr_record *rec)
 {
 	TMMID(struct smd_nvme_dev_df)	ndev_mmid;
 	struct smd_nvme_dev_df		*ndev_df;
@@ -87,7 +87,7 @@ dtab_df_rec_alloc(struct btr_instance *tins, daos_iov_t *key_iov,
 
 static int
 dtab_df_rec_fetch(struct btr_instance *tins, struct btr_record *rec,
-		  daos_iov_t *key_iov, daos_iov_t *val_iov)
+		  d_iov_t *key_iov, d_iov_t *val_iov)
 {
 	struct smd_nvme_dev_df		*ndev_df = NULL;
 
@@ -98,7 +98,7 @@ dtab_df_rec_fetch(struct btr_instance *tins, struct btr_record *rec,
 
 static int
 dtab_df_rec_update(struct btr_instance *tins, struct btr_record *rec,
-		   daos_iov_t *key_iov, daos_iov_t *val_iov)
+		   d_iov_t *key_iov, d_iov_t *val_iov)
 {
 	struct smd_nvme_dev_df		*ndev_df;
 
@@ -163,10 +163,10 @@ static int
 smd_dtab_df_lookup(struct smd_store *nvme_obj, struct d_uuid *ukey,
 		   struct smd_nvme_dev_df *ndev_df)
 {
-	daos_iov_t	key, value;
+	d_iov_t	key, value;
 
-	daos_iov_set(&key, ukey, sizeof(struct d_uuid));
-	daos_iov_set(&value, ndev_df, sizeof(struct smd_nvme_dev_df));
+	d_iov_set(&key, ukey, sizeof(struct d_uuid));
+	d_iov_set(&value, ndev_df, sizeof(struct smd_nvme_dev_df));
 	return dbtree_lookup(nvme_obj->sms_dev_tab, &key, &value);
 }
 
@@ -176,10 +176,10 @@ smd_dtab_df_update(struct smd_store *nvme_obj, struct d_uuid *ukey,
 		   struct smd_nvme_dev_df *ndev_df)
 {
 	int		rc = 0;
-	daos_iov_t	key, value;
+	d_iov_t	key, value;
 
-	daos_iov_set(&key, ukey, sizeof(struct d_uuid));
-	daos_iov_set(&value, ndev_df, sizeof(struct smd_nvme_dev_df));
+	d_iov_set(&key, ukey, sizeof(struct d_uuid));
+	d_iov_set(&value, ndev_df, sizeof(struct smd_nvme_dev_df));
 
 	rc = smd_tx_begin(nvme_obj);
 	if (rc != 0)

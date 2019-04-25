@@ -42,7 +42,7 @@ update_value(struct io_test_args *arg, daos_unit_oid_t oid, daos_epoch_t epoch,
 	     daos_recx_t *recx, char *buf)
 {
 	daos_iod_t	iod = { 0 };
-	daos_sg_list_t	sgl = { 0 };
+	d_sg_list_t	sgl = { 0 };
 	daos_key_t	dkey_iov, akey_iov;
 	daos_size_t	buf_len;
 	int		rc;
@@ -52,8 +52,8 @@ update_value(struct io_test_args *arg, daos_unit_oid_t oid, daos_epoch_t epoch,
 	assert_true(!(arg->ta_flags & TF_ZERO_COPY));
 
 	arg->oid = oid;
-	daos_iov_set(&dkey_iov, dkey, strlen(dkey));
-	daos_iov_set(&akey_iov, akey, strlen(akey));
+	d_iov_set(&dkey_iov, dkey, strlen(dkey));
+	d_iov_set(&akey_iov, akey, strlen(akey));
 
 	rc = daos_sgl_init(&sgl, 1);
 	assert_int_equal(rc, 0);
@@ -96,7 +96,7 @@ fetch_value(struct io_test_args *arg, daos_unit_oid_t oid, daos_epoch_t epoch,
 	    daos_recx_t *recx, char *buf)
 {
 	daos_iod_t	iod = { 0 };
-	daos_sg_list_t	sgl = { 0 };
+	d_sg_list_t	sgl = { 0 };
 	daos_key_t	dkey_iov, akey_iov;
 	daos_size_t	buf_len;
 	int		rc;
@@ -106,8 +106,8 @@ fetch_value(struct io_test_args *arg, daos_unit_oid_t oid, daos_epoch_t epoch,
 	assert_true(!(arg->ta_flags & TF_ZERO_COPY));
 
 	arg->oid = oid;
-	daos_iov_set(&dkey_iov, dkey, strlen(dkey));
-	daos_iov_set(&akey_iov, akey, strlen(akey));
+	d_iov_set(&dkey_iov, dkey, strlen(dkey));
+	d_iov_set(&akey_iov, akey, strlen(akey));
 
 	rc = daos_sgl_init(&sgl, 1);
 	assert_int_equal(rc, 0);
@@ -172,8 +172,8 @@ phy_recs_nr(struct io_test_args *arg, daos_unit_oid_t oid,
 
 	assert_true(dkey != NULL && akey != NULL);
 	assert_true(strlen(dkey) && strlen(akey));
-	daos_iov_set(&dkey_iov, dkey, strlen(dkey));
-	daos_iov_set(&akey_iov, akey, strlen(akey));
+	d_iov_set(&dkey_iov, dkey, strlen(dkey));
+	d_iov_set(&akey_iov, akey, strlen(akey));
 
 	iter_param.ip_hdl = arg->ctx.tc_co_hdl;
 	iter_param.ip_oid = oid;

@@ -199,7 +199,7 @@ int
 pool_iv_fetch(void *ns, struct pool_iv_entry *pool_iv)
 {
 	d_sg_list_t		sgl;
-	daos_iov_t		iov;
+	d_iov_t		iov;
 	uint32_t		pool_iv_len;
 	struct ds_iv_key	key;
 	int			rc;
@@ -226,7 +226,7 @@ pool_iv_update(void *ns, struct pool_iv_entry *pool_iv,
 	       unsigned int shortcut, unsigned int sync_mode)
 {
 	d_sg_list_t		sgl;
-	daos_iov_t		iov;
+	d_iov_t		iov;
 	uint32_t		pool_iv_len;
 	struct ds_iv_key	key;
 	int			rc;
