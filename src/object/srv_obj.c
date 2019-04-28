@@ -734,6 +734,12 @@ ds_obj_rw_handler(crt_rpc_t *rpc)
 	dispatch = update && orw->orw_shard_tgts.ca_arrays != NULL;
 	tag = dss_get_module_info()->dmi_tgt_id;
 
+	/* FIXME: until distributed transaction. */
+	if (orw->orw_epoch == DAOS_EPOCH_MAX) {
+		orw->orw_epoch = daos_ts2epoch();
+		D_DEBUG(DB_IO, "overwrite epoch "DF_U64"\n", orw->orw_epoch);
+	}
+
 	D_TIME_START(tls->ot_sp, OBJ_PF_UPDATE_PREP);
 	D_TIME_START(tls->ot_sp, OBJ_PF_UPDATE);
 	D_DEBUG(DB_TRACE, "rpc %p opc %d "DF_UOID" dkey %d %s tag/xs %d/%d eph "
@@ -1203,6 +1209,12 @@ ds_obj_punch_handler(crt_rpc_t *rpc)
 	opi = crt_req_get(rpc);
 	D_ASSERT(opi != NULL);
 	dispatch = opi->opi_shard_tgts.ca_arrays != NULL;
+
+	/* FIXME: until distributed transaction. */
+	if (opi->opi_epoch == DAOS_EPOCH_MAX) {
+		opi->opi_epoch = daos_ts2epoch();
+		D_DEBUG(DB_IO, "overwrite epoch "DF_U64"\n", opi->opi_epoch);
+	}
 
 	tag = dss_get_module_info()->dmi_tgt_id;
 	rc = ds_check_container(opi->opi_co_hdl, opi->opi_co_uuid,
